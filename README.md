@@ -16,9 +16,7 @@ This repository provides complete replication materials for the paper, including
 - [Workflow](#workflow)
 - [Configuration](#configuration)
 - [Computational Requirements](#computational-requirements)
-- [Troubleshooting](#troubleshooting)
-- [Citation](#citation)
-- [License](#license)
+
 
 ---
 
@@ -198,6 +196,5 @@ n_warmup     = max(75, floor(n_iter * target_ratio))
 
 **[⬆ back to top](#linking-absolute-and-relative-mobility)**
 
-Made with ❤️ for reproducible research
 
 </div>
