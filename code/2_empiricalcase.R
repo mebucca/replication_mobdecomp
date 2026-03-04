@@ -15,7 +15,8 @@ rolling <- function(x, y) {
 # Load raw PSID data
 # ------------------------------------------------------------------------------
 
-data_full <- read_dta(here("data", "myPSID_sibcorr.dta"))
+load(here("data", "myPSID.RData"))
+data_full <- myPSID
 
 # ==============================================================================
 # Construct income trajectories for fathers, mothers, and children
