@@ -113,7 +113,7 @@ n_warmup = max(75, floor(n_iter * target_ratio))
 
 # Define path to root directory  
 
-folder <- '/Users/mebucca/Library/Mobile Documents/com~apple~CloudDocs/Research/Mobility Decomposition'
+folder <- 'my_root_directory'
 code <- here(folder,"code")
 data <- here(folder,"data")
 figures <- here(folder,"figures")
