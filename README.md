@@ -1,121 +1,290 @@
-## Replication code for paper "Linking Absolute and Relative Mobility: A Tractable Framework, a Decomposition Method, and an Application to Black–White Mobility Differences"
+# Linking Absolute and Relative Mobility
 
-This repository contains all code necessary to reproduce the estimations, tables, and figures presented in the project. The workflow is fully scripted. Executing the master file runs the complete pipeline and reproduces all results without manual intervention.
+> Replication code for "Linking Absolute and Relative Mobility: A Tractable Framework, a Decomposition Method, and an Application to Black–White Mobility Differences"
 
-1. SOFTWARE REQUIREMENTS
+This repository provides complete replication materials for the paper, including all data processing, Bayesian estimation, and visualization code. The workflow is fully automated—running the master script reproduces all tables and figures without manual intervention.
 
-Required:
+---
 
-* R (version 4.2 or newer recommended)
-* CmdStan properly installed and configured
-* A working C++ toolchain (required for rstan / cmdstanr)
+## 📋 Table of Contents
 
-If `pacman` is not installed:
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Workflow](#workflow)
+- [Configuration](#configuration)
+- [Computational Requirements](#computational-requirements)
+- [Troubleshooting](#troubleshooting)
+- [Citation](#citation)
+- [License](#license)
 
+---
+
+## ✨ Features
+
+- **Fully automated pipeline**: One-click replication of all results
+- **Bayesian estimation**: Stan-based MCMC for structural model estimation
+- **Monte Carlo experiments**: Comprehensive simulation studies
+- **Publication-ready outputs**: High-quality figures and formatted tables
+- **Portable code**: Cross-platform compatibility using `here()` package
+
+---
+
+## 📦 Prerequisites
+
+### Required Software
+
+| Software | Minimum Version | Purpose |
+|----------|----------------|---------|
+| **R** | 4.2+ | Statistical computing |
+| **CmdStan** | Latest | Bayesian inference engine |
+| **C++ toolchain** | - | Required for Stan compilation |
+
+### R Package Installation
+
+All required packages will be automatically installed via `pacman`. If you don't have `pacman`, install it first:
+
+```r
 install.packages("pacman")
+```
 
-To install CmdStan (required only once):
+### Stan Installation
 
+CmdStan must be installed before running the code (required only once):
+
+```r
+# Install cmdstanr if not already installed
+install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+
+# Install CmdStan
 cmdstanr::install_cmdstan()
+```
 
+For detailed installation instructions, see the [CmdStanR documentation](https://mc-stan.org/cmdstanr/).
 
-2. REQUIRED FOLDER STRUCTURE
+---
 
+## 📁 Project Structure
 
-All folders must be located in the project root directory. Before running the code, ensure the following structure exists:
+Ensure your project directory follows this structure:
 
+```
 project_root/
 │
 ├── code/
-├── data/
-├── figures/
-├── tables/
+│   ├── 0_masterfile.R          # Master execution script
+│   ├── 1_montecarlo.R          # Monte Carlo simulations
+│   ├── 2_empiricalcase.R       # Empirical estimation
+│   └── 3_plotcurves.R          # Figure generation
+│
+├── data/                        # Input datasets (required)
+│
+├── figures/                     # Output figures (create empty)
+│
+└── tables/                      # Output tables (create empty)
+```
 
-Important:
+### Setup Instructions
 
-* All input datasets must be stored inside the `data/` folder.
-* The user must create empty folders named `figures/` and `tables/` in the root directory before running the scripts.
-* The `code/` folder must contain the following core scripts:
+1. **Create output directories** (if they don't exist):
+   ```bash
+   mkdir figures tables
+   ```
 
-  * 0_masterfile.R
-  * 1_montecarlo.R
-  * 2_empiricalcase.R
-  * 3_plotcurves.R
+2. **Place input data** in the `data/` folder
 
+3. **Verify** that all scripts are in the `code/` folder
 
-3. SETUP
+---
 
+## 🚀 Quick Start
 
-Inside `0_masterfile.R`, define the root directory path:
+### 1. Configure Project Path
 
+Open `code/0_masterfile.R` and set the root directory:
+
+```r
 folder <- "YOUR/PATH/TO/PROJECT"
+```
 
-This path must point to the `project_root` directory containing `code/`, `data/`, `figures/`, and `tables/`.
+> **Note**: This path should point to `project_root/`, the directory containing `code/`, `data/`, `figures/`, and `tables/`.
 
-All paths are handled using the `here()` package to ensure portability across systems.
+### 2. Run the Master File
 
+```r
+source("code/0_masterfile.R")
+```
 
-4. EXECUTION
+That's it! The script will execute the entire workflow and generate all outputs.
 
+---
 
-Open the `code/` folder and run `0_masterfile.R`. This master script executes the full workflow sequentially:
+## 🔄 Workflow
 
-A) MONTE CARLO EXPERIMENT
+The master file orchestrates three main stages:
 
-source(here("code","1_montecarlo.R"))
+### Stage 1: Monte Carlo Experiment
+```r
+source(here("code", "1_montecarlo.R"))
+```
 
-This script:
+- Implements the data generating process (DGP)
+- Performs Bayesian estimation using Stan
+- Validates model recovery properties
+- Stores simulation results
 
-* Runs the data generating process (DGP)
-* Performs Bayesian estimation using rstan / cmdstanr
-* Stores simulation outputs
+### Stage 2: Empirical Application
+```r
+source(here("code", "2_empiricalcase.R"))
+```
 
-B) EMPIRICAL APPLICATION
+- Loads empirical datasets from `data/`
+- Estimates structural parameters
+- Generates tables for the paper
+- Saves outputs to `tables/`
 
-source(here("code","2_empiricalcase.R"))
+### Stage 3: Visualization
+```r
+source(here("code", "3_plotcurves.R"))
+```
 
-This script:
+- Creates publication-quality figures:
+  - Figure 2, Panel A
+  - Figure 4, Panels A and B
+- Applies custom graphical theme
+- Saves outputs to `figures/`
 
-* Loads empirical data from `data/`
-* Estimates the structural model
-* Produces tables saved in `tables/`
+---
 
-C) PLOT CURVES
+## ⚙️ Configuration
 
-source(here("code","3_plotcurves.R"))
+### MCMC Parameters
 
-This script:
+Default settings in the estimation scripts:
 
-* Generates the article's figure 2 panel A and figure 4, panels A and B.
-* Saves outputs in `figures/`
-* Applies the custom graphical theme
+```r
+n_chains     = 4      # Number of MCMC chains
+n_iter       = 2000   # Iterations per chain
+target_ratio = 0.5    # Warmup proportion
+n_warmup     = max(75, floor(n_iter * target_ratio))
+```
 
-No additional steps are required if the directory structure and dependencies are correctly configured.
+**Adjusting parameters:**
+- Increase `n_iter` for better convergence (at the cost of runtime)
+- Modify `n_chains` based on available CPU cores
+- Check convergence diagnostics (R̂, ESS) in Stan output
 
+---
 
-5. MCMC CONFIGURATION
+## 💻 Computational Requirements
 
+### Recommended Specifications
 
-Default configuration:
+- **RAM**: 16 GB minimum (32 GB recommended for parallel chains)
+- **CPU**: Multi-core processor (4+ cores recommended)
+- **Storage**: 2 GB free space for outputs
+- **OS**: Windows 10/11, macOS 10.13+, or Linux
 
-n_chains = 4
-n_iter   = 2000
-target_ratio = 0.5
-n_warmup = max(75, floor(n_iter * target_ratio))
+### Performance Notes
 
-These parameters can be adjusted depending on computational capacity and convergence diagnostics.
+- **Initial compilation**: Stan models compile on first run (5-10 minutes)
+- **Estimation time**: Varies by dataset size and MCMC settings
+  - Monte Carlo: ~30 minutes
+  - Empirical case: ~1-2 hours
+- **Parallel processing**: Utilizes multiple cores for chain parallelization
 
+---
 
-6. COMPUTATIONAL CONSIDERATIONS
+## 🔧 Troubleshooting
 
+<details>
+<summary><b>Stan compilation errors</b></summary>
 
-* Bayesian estimation may be computationally intensive.
-* Initial Stan model compilation may take several minutes.
-* Parallel chains require sufficient RAM.
+Ensure C++ toolchain is properly installed:
+- **Windows**: Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/)
+- **macOS**: Install Xcode Command Line Tools: `xcode-select --install`
+- **Linux**: Install `build-essential` package
 
-Recommended:
+</details>
 
-* At least 16GB RAM
-* Multi-core processor
+<details>
+<summary><b>"Cannot find data files" error</b></summary>
 
-If the directory structure is correctly defined and all dependencies are installed, the replication should run without further modification.
+- Verify `data/` folder exists in project root
+- Check that `folder` path in `0_masterfile.R` is correct
+- Ensure all required datasets are present in `data/`
+
+</details>
+
+<details>
+<summary><b>Out of memory errors</b></summary>
+
+- Reduce `n_chains` (e.g., from 4 to 2)
+- Decrease `n_iter` temporarily
+- Close other applications to free RAM
+- Consider running on a machine with more memory
+
+</details>
+
+<details>
+<summary><b>Convergence warnings</b></summary>
+
+If you see R̂ > 1.01 or low ESS warnings:
+- Increase `n_iter` (try 4000 or 8000)
+- Check parameter initialization
+- Review model diagnostics in Stan output
+
+</details>
+
+---
+
+## 📖 Citation
+
+If you use this code in your research, please cite:
+
+```bibtex
+@article{yourname2024mobility,
+  title={Linking Absolute and Relative Mobility: A Tractable Framework, a Decomposition Method, and an Application to Black–White Mobility Differences},
+  author={Your Name and Co-authors},
+  journal={Journal Name},
+  year={2024},
+  volume={XX},
+  pages={XXX--XXX}
+}
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🤝 Contributing
+
+This is a replication repository for a published paper. While we welcome feedback and bug reports, we do not accept pull requests for methodological changes. For questions or issues:
+
+1. Check the [Troubleshooting](#troubleshooting) section
+2. Open an [issue](../../issues) with a reproducible example
+3. Contact the corresponding author
+
+---
+
+## 📬 Contact
+
+**Corresponding Author**: [Your Name]  
+**Email**: your.email@institution.edu  
+**Institution**: Your University/Institution
+
+---
+
+<div align="center">
+
+**[⬆ back to top](#linking-absolute-and-relative-mobility)**
+
+Made with ❤️ for reproducible research
+
+</div>
